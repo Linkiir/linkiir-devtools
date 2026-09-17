@@ -12,7 +12,7 @@ content to your grid without a product upgrade.
 |---|---|
 | **Catalog id** | `lktool` |
 | **Publisher** | Linkiir Inc |
-| **Tools** | 0 |
+| **Tools** | 1 |
 | **Libraries** | 0 |
 | **Documentation** | [https://help.linkiir.com/docs/catalogs/](https://help.linkiir.com/docs/catalogs/) |
 
@@ -51,19 +51,57 @@ harness. Because a tool is self-contained, it fits here regardless of which
 protocols or vendors you integrate with, so every grid can use it without
 subscribing to a domain catalog it does not otherwise need.
 
-## Contents
+## Tools
 
-This catalog is registered and reserved, but **no tools have been published to
-it yet**. Grid will refuse a subscribe until it holds at least one node or
-library, so there is nothing to add to your grid from here today.
+| Tool | Node type | Trigger | Version | Node type id |
+|---|---|---|---|---|
+| **Data Simulator** | source | interval | 1.0.0 | `LKTOOL_DATA_SIMULATOR` |
 
-The first tool planned for this catalog is a **Data Simulator** — a source node
-that emits synthetic HL7 v2, X12, CDA, and FHIR messages on a timer, with the
-message type chosen from a dropdown, for building and load-testing interfaces
-without a live feed.
+### Data Simulator
 
-Watch this repository to be notified when it ships, or talk to your Linkiir
-contact.
+Emits synthetic messages on every poll interval and pushes them onto the queue,
+with the message type chosen from a dropdown. Use it to build and load-test an
+interface before a live feed exists: point a transform at it, start the
+workflow, and watch realistic traffic flow through.
+
+`LKTOOL_DATA_SIMULATOR` · source node · version 1.0.0 · 7 configuration fields ·
+no library
+
+**Message types**
+
+| Option | Produces |
+|---|---|
+| `HL7 v2.5.1 ADT^A01 (Admit)` | Pipe-delimited ADT admit with MSH, EVN, PID, NK1, PV1, two OBX vitals, AL1 and DG1. CR-separated segments. |
+| `C-CDA R2.1 CCD` | Continuity of Care Document with a conformant header plus Allergies and Problems sections. |
+| `FHIR R4 Patient` | US Core–profiled Patient resource with an MR identifier, name, telecom, gender, birth date and address. |
+| `FHIR R4 Observation` | Vital-signs Observation (body weight, LOINC 29463-7) referencing the same patient. |
+| `X12 5010 270 (Eligibility Inquiry)` | Full interchange — ISA/GS envelope, 005010X279A1 eligibility inquiry, GE/IEA. |
+| `X12 5010 271 (Eligibility Response)` | The matching response for the same member: active coverage, co-pay and deductible benefit lines. |
+
+**Configuration**
+
+| Field | Default | What it does |
+|---|---|---|
+| Interval | `10000` | Milliseconds between batches. Lower it to raise throughput. |
+| Message Type | HL7 ADT^A01 | Which message to generate. |
+| Messages Per Interval | `1` | How many to emit per interval. Capped at 1000. |
+| Topic | _(empty)_ | Optional queue topic. Empty uses the node's configured destination. |
+| Randomize Content | `true` | Off uses a fixed patient rotation, making a run repeatable. |
+| Random Seed | `0` | `0` varies each start; any other value pins the sequence for a regression test. |
+| Live Mode | `true` | Off generates and counts messages without queuing them. |
+
+**No PHI.** Every name, address, identifier and payer is invented. Three fixed
+patients are rotated so repeated messages describe a stable population — an
+upsert or patient-match rule needs the same MRN to recur. Because the data is
+synthetic, the output is safe to share, commit and attach to a support ticket.
+
+**Sample output** for all six message types is in
+[`nodes/data_simulator/samples/`](nodes/data_simulator/samples).
+
+**Adding a message type** means adding one entry to `samples.lua` and one option
+to the Message Type dropdown in `node_config.json`. Templates are literal text
+with `{{TOKEN}}` placeholders rather than grammar-built messages, so what you
+read in `samples.lua` is exactly what gets queued.
 
 ## Repository layout
 
@@ -71,7 +109,7 @@ contact.
 catalog.json                              catalog manifest
 nodes/<slug>/node_config.json             a node definition
 nodes/<slug>/*.lua                        its scripts
-nodes/<slug>/samples/                     de-identified sample messages
+nodes/<slug>/samples/                     sample output for each message type
 libraries/<name>/<version>/library.json   a published library version
 libraries/<name>/<version>/<name>/*.lua   its modules
 ```
