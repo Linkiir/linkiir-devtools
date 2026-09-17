@@ -1,0 +1,64 @@
+{
+  "guid": "",
+  "workflow_guid": "",
+  "node_type": "source",
+  "node_type_id": "LKTOOL_DATA_SIMULATOR",
+  "interval": true,
+  "node_name": "Data Simulator",
+  "description": "Emits synthetic HL7 v2, C-CDA, FHIR or X12 messages on every poll interval and pushes them onto the queue. Pick the message type from a dropdown. Everything it produces is invented test data, so it carries no PHI. Use it to build and load-test an interface before a live feed exists.",
+  "config": [
+    {
+      "label": "Interval",
+      "value": 10000,
+      "field_type": "number",
+      "description": "How often, in milliseconds, to emit a batch of messages. 10000 is ten seconds. Lower it to raise throughput for a load test."
+    },
+    {
+      "label": "Message Type",
+      "value": "HL7 v2.5.1 ADT^A01 (Admit)",
+      "field_type": "list",
+      "description": "Which message to generate. Each option is a complete, realistic message of that type.",
+      "list_options": [
+        "HL7 v2.5.1 ADT^A01 (Admit)",
+        "C-CDA R2.1 CCD",
+        "FHIR R4 Patient",
+        "FHIR R4 Observation",
+        "X12 5010 270 (Eligibility Inquiry)",
+        "X12 5010 271 (Eligibility Response)"
+      ]
+    },
+    {
+      "label": "Messages Per Interval",
+      "value": 1,
+      "field_type": "number",
+      "description": "How many messages to emit on each interval. 1 for a demo feed; raise it to generate load. Capped at 1000 per interval."
+    },
+    {
+      "label": "Topic",
+      "value": "",
+      "field_type": "string",
+      "description": "Optional queue topic to publish to. Leave empty to use the node's configured destination, which is what a normal workflow wants."
+    },
+    {
+      "label": "Randomize Content",
+      "value": true,
+      "field_type": "bool",
+      "description": "On, each message picks a patient at random. Off, patients are used in a fixed rotation, which makes a run repeatable."
+    },
+    {
+      "label": "Random Seed",
+      "value": 0,
+      "field_type": "number",
+      "description": "0 varies the output on every start. Any other value pins the sequence, so the same run produces the same messages - use it for a regression test."
+    },
+    {
+      "label": "Live Mode",
+      "value": true,
+      "field_type": "bool",
+      "description": "When off, messages are generated and counted but never queued. Use it to confirm the node is configured before it starts producing traffic."
+    }
+  ],
+  "library_deps": {},
+  "config_version": 1,
+  "version": "1.0.0"
+}

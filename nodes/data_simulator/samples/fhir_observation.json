@@ -1,0 +1,35 @@
+{
+  "resourceType": "Observation",
+  "id": "7f3a1c8e9b2d4a6f5e0c3b8a1d9f2e4c",
+  "meta": { "lastUpdated": "2026-09-17T23:20:40Z" },
+  "status": "final",
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+          "code": "vital-signs",
+          "display": "Vital Signs"
+        }
+      ]
+    }
+  ],
+  "code": {
+    "coding": [
+      { "system": "http://loinc.org", "code": "29463-7", "display": "Body Weight" }
+    ],
+    "text": "Body Weight"
+  },
+  "subject": {
+    "reference": "Patient/MRN100001",
+    "display": "JAMES SMITH"
+  },
+  "effectiveDateTime": "2026-09-17T23:20:40Z",
+  "issued": "2026-09-17T23:20:40Z",
+  "valueQuantity": {
+    "value": 149,
+    "unit": "lb",
+    "system": "http://unitsofmeasure.org",
+    "code": "[lb_av]"
+  }
+}
