@@ -143,21 +143,28 @@ function main()
    local Count = math.max(1, math.min(PerInterval, 1000))
    local Sent = 0
 
+   -- A running node pushes whatever `live` says, so with Live Mode off the
+   -- push is skipped here. Run Test and Debug simulate it in the runtime.
+   local SkipPush = not LiveMode and not linkiir.node.dev()
+
    for _ = 1, Count do
       local Patient = nextPatient()
       local Message = build(Template, tokens(Patient))
 
-      local Ok, Result = pcall(linkiir.flow.push, {
-         data  = Message,
-         topic = Topic,
-         live  = LiveMode,
-         metadata = {
-            simulator = 'LKTOOL_DATA_SIMULATOR',
-            message_type = MessageType,
-            format = Template.ext,
-            mrn = Patient.mrn,
-         },
-      })
+      local Ok, Result = true, nil
+      if not SkipPush then
+         Ok, Result = pcall(linkiir.flow.push, {
+            data  = Message,
+            topic = Topic,
+            live  = LiveMode,
+            metadata = {
+               simulator = 'LKTOOL_DATA_SIMULATOR',
+               message_type = MessageType,
+               format = Template.ext,
+               mrn = Patient.mrn,
+            },
+         })
+      end
 
       if Ok then
          Sent = Sent + 1

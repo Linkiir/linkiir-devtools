@@ -61,5 +61,81 @@
   ],
   "library_deps": {},
   "config_version": 1,
-  "version": "1.0.0"
+  "version": "1.0.1",
+  "template_origin": {
+    "catalog": "linkiir-devtools",
+    "template_id": "group:linkiir-devtools/data_simulator",
+    "commit": "ef3c96c42575ae76b983621bb38166a003ef965d",
+    "version": "1.0.0",
+    "linked": false,
+    "files": [
+      "main.lua",
+      "samples.lua",
+      "samples/adt_a01.hl7",
+      "samples/ccd.xml",
+      "samples/fhir_observation.json",
+      "samples/fhir_patient.json",
+      "samples/x12_270.txt",
+      "samples/x12_271.txt"
+    ],
+    "field_defs": [
+      {
+        "label": "Interval",
+        "field_type": "number",
+        "description": "How often, in milliseconds, to emit a batch of messages. 10000 is ten seconds. Lower it to raise throughput for a load test.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Message Type",
+        "field_type": "list",
+        "description": "Which message to generate. Each option is a complete, realistic message of that type.",
+        "list_options": [
+          "HL7 v2.5.1 ADT^A01 (Admit)",
+          "C-CDA R2.1 CCD",
+          "FHIR R4 Patient",
+          "FHIR R4 Observation",
+          "X12 5010 270 (Eligibility Inquiry)",
+          "X12 5010 271 (Eligibility Response)"
+        ],
+        "depends_on": null
+      },
+      {
+        "label": "Messages Per Interval",
+        "field_type": "number",
+        "description": "How many messages to emit on each interval. 1 for a demo feed; raise it to generate load. Capped at 1000 per interval.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Topic",
+        "field_type": "string",
+        "description": "Optional queue topic to publish to. Leave empty to use the node's configured destination, which is what a normal workflow wants.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Randomize Content",
+        "field_type": "bool",
+        "description": "On, each message picks a patient at random. Off, patients are used in a fixed rotation, which makes a run repeatable.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Random Seed",
+        "field_type": "number",
+        "description": "0 varies the output on every start. Any other value pins the sequence, so the same run produces the same messages - use it for a regression test.",
+        "list_options": null,
+        "depends_on": null
+      },
+      {
+        "label": "Live Mode",
+        "field_type": "bool",
+        "description": "When off, messages are generated and counted but never queued. Use it to confirm the node is configured before it starts producing traffic.",
+        "list_options": null,
+        "depends_on": null
+      }
+    ]
+  },
+  "min_grid_version": "1.2.0"
 }
